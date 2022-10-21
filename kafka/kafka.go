@@ -58,29 +58,3 @@ func Publish(data interface{}, topic string)  {
 	// Wait for message deliveries before shutting down
 	producer.Flush(15 * 1000)
 }
-
-func ConsumeMessages(topics []string) {
-
-	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
-		FcmbKafkaAddressKey: os.Getenv(FcmbKafkaAddress),
-		FcmbKafkaGroupIdKey: os.Getenv(FcmbKafkaGroupId),
-		FcmbKafkaOffsetKey:  os.Getenv(FcmbKafkaOffset),
-	})
-
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(3)
-	}
-
-	consumer.SubscribeTopics(topics, nil)
-
-	for {
-		msg, err := consumer.ReadMessage(-1)
-		if err == nil {
-			switch *msg.TopicPartition.Topic {}
-		} else {
-			//Publish to error log
-		}
-	}
-	consumer.Close()
-}
