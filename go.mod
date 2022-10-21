@@ -1,4 +1,4 @@
-module fcmb-helpers
+module github.com/OpenFactor-Holding/superapp
 
 go 1.19
 
