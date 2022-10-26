@@ -1,6 +1,7 @@
 package assemblers
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/OpenFactor-Holding/superapp/dtos"
 	"github.com/gin-gonic/gin"
@@ -17,13 +18,13 @@ func AssembleAuditLog(c *gin.Context, audit dtos.Audit) dtos.AuditLog {
 
 	defer c.Request.Body.Close()
 	requestBody, requestHeaders := buildContext(c)
-
+	req, _ := json.Marshal(string(requestBody))
 	return dtos.AuditLog{
 		RecordID:              uuid.New(),
 		RequestUri:            c.Request.URL.Path,
 		RequestHttpMethod:     c.Request.Method,
 		RequestHeaders:        requestHeaders,
-		RequestBody:           string(requestBody),
+		RequestBody:           req,
 		RequestIpAddress:      c.Request.RemoteAddr,
 		RequestTimestamp:      time.Now(),
 		RequestType:           httpRequest,
