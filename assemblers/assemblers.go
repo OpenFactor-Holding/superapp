@@ -5,7 +5,6 @@ import (
 	"github.com/OpenFactor-Holding/superapp/dtos"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"io/ioutil"
 	"log"
 	"time"
 )
@@ -130,7 +129,7 @@ func AssembleCommnLog(c *gin.Context, commn dtos.Communication) dtos.Communicati
 }
 
 func buildContext(c *gin.Context) ([]byte, map[string]interface{}) {
-	jsonData, err := ioutil.ReadAll(c.Request.Body)
+	jsonData, err := c.GetRawData()
 	if err != nil {
 		log.Println("Failed to extract the request body")
 	}
