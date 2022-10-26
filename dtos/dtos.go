@@ -18,7 +18,7 @@ type AuditLog struct {
 	RequestDeviceType     string                 `json:"request_device_type"`
 	RequestEntityTypes    []string               `json:"request_entity_type"`
 	RequestActionType     string                 `json:"request_action_type"`
-	RequestBody           string                 `json:"request_body"`
+	RequestBody           interface{}                 `json:"request_body"`
 	RequestResponseBody   interface{}            `json:"request_response_body"`
 	RequestType           string                 `json:"request_type"`
 }
