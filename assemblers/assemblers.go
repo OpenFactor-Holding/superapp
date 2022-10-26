@@ -5,6 +5,7 @@ import (
 	"github.com/OpenFactor-Holding/superapp/dtos"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"io/ioutil"
 	"log"
 	"time"
 )
@@ -23,7 +24,7 @@ func AssembleAuditLog(c *gin.Context, audit dtos.Audit) dtos.AuditLog {
 		RequestUri:            c.Request.URL.Path,
 		RequestHttpMethod:     c.Request.Method,
 		RequestHeaders:        requestHeaders,
-		RequestBody:           fmt.Sprint(requestBody),
+		RequestBody:           string(requestBody),
 		RequestIpAddress:      c.Request.RemoteAddr,
 		RequestTimestamp:      time.Now(),
 		RequestType:           httpRequest,
@@ -47,7 +48,7 @@ func AssembleErrorLog(c *gin.Context, error dtos.Error) dtos.ErrorLogs {
 		RequestUri:            c.Request.URL.Path,
 		RequestHttpMethod:     c.Request.Method,
 		RequestHeaders:        requestHeaders,
-		RequestBody:           fmt.Sprint(requestBody),
+		RequestBody:           string(requestBody),
 		RequestIpAddress:      c.Request.RemoteAddr,
 		RequestTimestamp:      time.Now(),
 		RequestType:           httpRequest,
@@ -75,7 +76,7 @@ func AssembleEventLog(c *gin.Context, event dtos.Event) dtos.EventLog {
 		RequestUri:            c.Request.URL.Path,
 		RequestHttpMethod:     c.Request.Method,
 		RequestHeaders:        requestHeaders,
-		RequestBody:           fmt.Sprint(requestBody),
+		RequestBody:           string(requestBody),
 		RequestIpAddress:      c.Request.RemoteAddr,
 		RequestTimestamp:      time.Now(),
 		RequestType:           httpRequest,
@@ -104,7 +105,7 @@ func AssembleCommnLog(c *gin.Context, commn dtos.Communication) dtos.Communicati
 		RequestUri:            c.Request.URL.Path,
 		RequestHttpMethod:     c.Request.Method,
 		RequestHeaders:        requestHeaders,
-		RequestBody:           fmt.Sprint(requestBody),
+		RequestBody:           string(requestBody),
 		RequestIpAddress:      c.Request.RemoteAddr,
 		RequestTimestamp:      time.Now(),
 		RequestType:           httpRequest,
@@ -128,9 +129,9 @@ func AssembleCommnLog(c *gin.Context, commn dtos.Communication) dtos.Communicati
 	}
 }
 
-func buildContext(c *gin.Context) (map[string]interface{}, map[string]interface{}) {
-	var requestBody map[string]interface{}
-	if err := c.BindJSON(&requestBody); err != nil {
+func buildContext(c *gin.Context) ([]byte, map[string]interface{}) {
+	jsonData, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
 		log.Println("Failed to extract the request body")
 	}
 
@@ -141,5 +142,5 @@ func buildContext(c *gin.Context) (map[string]interface{}, map[string]interface{
 			requestHeaders[name] = header
 		}
 	}
-	return requestBody, requestHeaders
+	return jsonData, requestHeaders
 }
