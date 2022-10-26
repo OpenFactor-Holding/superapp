@@ -18,7 +18,7 @@ type AuditLog struct {
 	RequestDeviceType     string                 `json:"request_device_type"`
 	RequestEntityTypes    []string               `json:"request_entity_type"`
 	RequestActionType     string                 `json:"request_action_type"`
-	RequestBody           interface{}                 `json:"request_body"`
+	RequestBody           interface{}            `json:"request_body"`
 	RequestResponseBody   interface{}            `json:"request_response_body"`
 	RequestType           string                 `json:"request_type"`
 }
@@ -144,14 +144,14 @@ type Event struct {
 	RequestServiceID      string
 	RequestResponseBody   interface{}
 	RequestResponseStatus string
-	TopicName  string
-	BrokerHost string
-	BrokerPort string
-	FileName   string
-	MethodName string
-	LineNumber string
-	LogLevel   string
-	Message    string
+	TopicName             string
+	BrokerHost            string
+	BrokerPort            string
+	FileName              string
+	MethodName            string
+	LineNumber            string
+	LogLevel              string
+	Message               string
 }
 
 type APIResponse struct {
