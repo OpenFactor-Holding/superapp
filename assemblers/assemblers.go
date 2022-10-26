@@ -1,7 +1,6 @@
 package assemblers
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/OpenFactor-Holding/superapp/dtos"
 	"github.com/gin-gonic/gin"
@@ -131,7 +130,7 @@ func AssembleCommnLog(c *gin.Context, commn dtos.Communication) dtos.Communicati
 
 func buildContext(c *gin.Context) (map[string]interface{}, map[string]interface{}) {
 	var requestBody map[string]interface{}
-	if err := json.NewDecoder(c.Request.Body).Decode(&requestBody); err != nil {
+	if err := c.BindJSON(&requestBody); err != nil {
 		log.Println("Failed to extract the request body")
 	}
 
