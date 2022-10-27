@@ -1,12 +1,10 @@
 package assemblers
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/OpenFactor-Holding/superapp/dtos"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"log"
 	"time"
 )
 
@@ -16,14 +14,14 @@ const (
 
 func AssembleAuditLog(c *gin.Context, audit dtos.Audit) dtos.AuditLog {
 
-	defer c.Request.Body.Close()
-	requestBody, requestHeaders := buildContext(c)
+	requestHeaders := buildHeaders(c)
+
 	return dtos.AuditLog{
 		RecordID:              uuid.New(),
 		RequestUri:            c.Request.URL.Path,
 		RequestHttpMethod:     c.Request.Method,
 		RequestHeaders:        requestHeaders,
-		RequestBody:           requestBody,
+		RequestBody:           audit.RequestBody,
 		RequestIpAddress:      c.Request.RemoteAddr,
 		RequestTimestamp:      time.Now(),
 		RequestType:           httpRequest,
@@ -39,15 +37,14 @@ func AssembleAuditLog(c *gin.Context, audit dtos.Audit) dtos.AuditLog {
 
 func AssembleErrorLog(c *gin.Context, error dtos.Error) dtos.ErrorLogs {
 
-	defer c.Request.Body.Close()
-	requestBody, requestHeaders := buildContext(c)
+	requestHeaders := buildHeaders(c)
 
 	return dtos.ErrorLogs{
 		RecordID:              uuid.New(),
 		RequestUri:            c.Request.URL.Path,
 		RequestHttpMethod:     c.Request.Method,
 		RequestHeaders:        requestHeaders,
-		RequestBody:           string(requestBody),
+		RequestBody:           error.RequestBody,
 		RequestIpAddress:      c.Request.RemoteAddr,
 		RequestTimestamp:      time.Now(),
 		RequestType:           httpRequest,
@@ -67,15 +64,14 @@ func AssembleErrorLog(c *gin.Context, error dtos.Error) dtos.ErrorLogs {
 
 func AssembleEventLog(c *gin.Context, event dtos.Event) dtos.EventLog {
 
-	defer c.Request.Body.Close()
-	requestBody, requestHeaders := buildContext(c)
+	requestHeaders := buildHeaders(c)
 
 	return dtos.EventLog{
 		RecordID:              uuid.New(),
 		RequestUri:            c.Request.URL.Path,
 		RequestHttpMethod:     c.Request.Method,
 		RequestHeaders:        requestHeaders,
-		RequestBody:           string(requestBody),
+		RequestBody:           event.RequestBody,
 		RequestIpAddress:      c.Request.RemoteAddr,
 		RequestTimestamp:      time.Now(),
 		RequestType:           httpRequest,
@@ -96,15 +92,15 @@ func AssembleEventLog(c *gin.Context, event dtos.Event) dtos.EventLog {
 }
 
 func AssembleCommnLog(c *gin.Context, commn dtos.Communication) dtos.CommunicationLog {
-	defer c.Request.Body.Close()
-	requestBody, requestHeaders := buildContext(c)
+
+	requestHeaders := buildHeaders(c)
 
 	return dtos.CommunicationLog{
 		RecordID:              uuid.New(),
 		RequestUri:            c.Request.URL.Path,
 		RequestHttpMethod:     c.Request.Method,
 		RequestHeaders:        requestHeaders,
-		RequestBody:           string(requestBody),
+		RequestBody:           commn.RequestBody,
 		RequestIpAddress:      c.Request.RemoteAddr,
 		RequestTimestamp:      time.Now(),
 		RequestType:           httpRequest,
@@ -128,11 +124,7 @@ func AssembleCommnLog(c *gin.Context, commn dtos.Communication) dtos.Communicati
 	}
 }
 
-func buildContext(c *gin.Context) ([]byte, map[string]interface{}) {
-	jsonData, err := c.GetRawData()
-	if err != nil {
-		log.Println("Failed to extract the request body")
-	}
+func buildHeaders(c *gin.Context) map[string]interface{} {
 
 	var requestHeaders = make(map[string]interface{})
 	for name, headers := range c.Request.Header {
@@ -141,6 +133,5 @@ func buildContext(c *gin.Context) ([]byte, map[string]interface{}) {
 			requestHeaders[name] = header
 		}
 	}
-	req, _ := json.Marshal(string(jsonData))
-	return req, requestHeaders
+	return requestHeaders
 }
