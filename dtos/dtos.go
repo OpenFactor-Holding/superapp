@@ -28,6 +28,7 @@ type Audit struct {
 	RequestActionType     string
 	RequestUserID         string
 	RequestServiceID      string
+	RequestBody           interface{}
 	RequestResponseBody   interface{}
 	RequestResponseStatus string
 }
@@ -64,6 +65,7 @@ type Error struct {
 	ErrorLineNumber       string
 	ErrorMethodName       string
 	ErrorStackTrace       string
+	RequestBody           interface{}
 	RequestResponseBody   interface{}
 	RequestResponseStatus string
 }
@@ -99,6 +101,7 @@ type CommunicationLog struct {
 type Communication struct {
 	RequestUserID         string
 	RequestServiceID      string
+	RequestBody           interface{}
 	RequestResponseBody   interface{}
 	RequestResponseStatus string
 	ProviderID            string
@@ -142,6 +145,7 @@ type EventLog struct {
 type Event struct {
 	RequestUserID         string
 	RequestServiceID      string
+	RequestBody           interface{}
 	RequestResponseBody   interface{}
 	RequestResponseStatus string
 	TopicName             string
