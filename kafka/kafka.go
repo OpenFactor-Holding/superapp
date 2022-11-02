@@ -10,19 +10,12 @@ import (
 
 const (
 	FcmbKafkaAddressKey   = "bootstrap.servers"
-	FcmbKafkaGroupIdKey = "group.id"
-	FcmbKafkaOffsetKey  = "auto.offset.reset"
-
 	FcmbKafkaAddress  = "KAFKA_ADDRESS"
-	FcmbKafkaGroupId = "KAFKA_GROUP_ID"
-	FcmbKafkaOffset  = "KAFKA_OFFSET"
 )
 func Publish(data interface{}, topic string)  {
 
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{
 		FcmbKafkaAddressKey: os.Getenv(FcmbKafkaAddress),
-		FcmbKafkaGroupIdKey: os.Getenv(FcmbKafkaGroupId),
-		FcmbKafkaOffsetKey:  os.Getenv(FcmbKafkaOffset),
 	})
 
 	if err != nil {
