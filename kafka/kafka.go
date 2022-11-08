@@ -9,10 +9,11 @@ import (
 )
 
 const (
-	FcmbKafkaAddressKey   = "bootstrap.servers"
-	FcmbKafkaAddress  = "KAFKA_ADDRESS"
+	FcmbKafkaAddressKey = "bootstrap.servers"
+	FcmbKafkaAddress    = "KAFKA_ADDRESS"
 )
-func Publish(data interface{}, topic string)  {
+
+func Publish(data interface{}, topic string) {
 
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{
 		FcmbKafkaAddressKey: os.Getenv(FcmbKafkaAddress),
@@ -42,10 +43,10 @@ func Publish(data interface{}, topic string)  {
 	byteData, err := json.Marshal(data)
 	producer.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{
-			Topic: &topic,
+			Topic:     &topic,
 			Partition: kafka.PartitionAny,
 		},
-		Value:          byteData,
+		Value: byteData,
 	}, nil)
 
 	// Wait for message deliveries before shutting down
