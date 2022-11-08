@@ -16,34 +16,36 @@ import (
 )
 
 const (
-	PersistError               = "an error occurred while creating "
-	PersistSuccess             = "successfully created a new "
-	PersistErrorCode           = "5000"
-	JSONParseErrorMessage      = "failed to extract JSON from request body"
-	JSONParseErrorCode         = "4000"
-	NotFoundErrorCode          = "4040"
-	NotFoundMessage            = " not found"
-	NotFoundMessageDescriptive = "no record found for provided "
-	FetchSuccess               = "success"
-	FetchFailure               = "failed"
-	ErrorLogs                  = "ERROR_LOGS"
-	AuditLogs                  = "AUDIT_LOGS"
-	InternalServerError        = "internal server error occurred"
-	JsonParseError             = "could not parse the request body"
+	PersistError          = "an error occurred while creating "
+	PersistSuccess        = "successfully created a new "
+	PersistErrorCode      = "5000"
+	JSONParseErrorMessage = "failed to extract JSON from request body"
+	JSONParseErrorCode    = "4000"
+	NotFoundErrorCode     = "4040"
+	NotFoundMessage = " not found"
+	NotFoundMessageDescriptive       = "no record found for provided "
+	FetchSuccess          = "success"
+	FetchFailure          = "failed"
+	ErrorLogs                = "ERROR_LOGS"
+	AuditLogs                = "AUDIT_LOGS"
+	InternalServerError = "internal server error occurred"
+	JsonParseError = "could not parse the request body"
 )
 
-func JSONParseError(err error, ctx *gin.Context, reqBody []byte, serviceId string, userId string) dtos.APIResponse {
+func JSONParseError(err interface{}, ctx *gin.Context, reqBody []byte, serviceId string, userId string) dtos.APIResponse {
+	var apiError = err.(dtos.APIError)
 	apiResponse := dtos.APIResponse{
 		StatusCode:    strconv.Itoa(http.StatusBadRequest),
 		StatusMessage: JSONParseErrorMessage,
 		Error: dtos.APIError{
 			ErrorCode:    JSONParseErrorCode,
 			ErrorMessage: JsonParseError,
+			ErrorDetails: apiError.ErrorDetails,
 		},
 	}
 	var jsonMap map[string]interface{}
 	json.Unmarshal(reqBody, &jsonMap)
-	LogError(ctx, apiResponse, jsonMap, err, serviceId, userId)
+	LogError(ctx, apiResponse, jsonMap, apiError.ErrorMessage, serviceId, userId)
 	return apiResponse
 }
 
@@ -97,7 +99,7 @@ func EntityNotFoundError(entityName string) dtos.APIResponse {
 		StatusMessage: entityName + NotFoundMessage,
 		Error: dtos.APIError{
 			ErrorCode:    NotFoundErrorCode,
-			ErrorMessage: NotFoundMessageDescriptive + entityName + "_id",
+			ErrorMessage: NotFoundMessageDescriptive + entityName +"_id",
 		},
 	}
 }
