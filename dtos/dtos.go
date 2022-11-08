@@ -165,7 +165,7 @@ type APIResponse struct {
 	Error         interface{} `json:"error,omitempty"`
 }
 type APIError struct {
-	ErrorCode    string `json:"error_code,omitempty"`
-	ErrorMessage string `json:"error_message,omitempty"`
-	ErrorDetails string `json:"error_details,omitempty"`
+	ErrorCode    string      `json:"error_code,omitempty"`
+	ErrorMessage string      `json:"error_message,omitempty"`
+	ErrorDetails interface{} `json:"error_details,omitempty"`
 }
