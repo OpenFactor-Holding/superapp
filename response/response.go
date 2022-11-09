@@ -18,9 +18,7 @@ import (
 const (
 	PersistError          = "an error occurred while creating "
 	PersistSuccess        = "successfully created a new "
-	PersistErrorCode      = "5000"
 	JSONParseErrorMessage = "failed to extract JSON from request body"
-	JSONParseErrorCode    = "4000"
 	NotFoundErrorCode     = "4040"
 	NotFoundMessage = " not found"
 	NotFoundMessageDescriptive       = "no record found for provided "
@@ -28,24 +26,17 @@ const (
 	FetchFailure          = "failed"
 	ErrorLogs                = "ERROR_LOGS"
 	AuditLogs                = "AUDIT_LOGS"
-	InternalServerError = "internal server error occurred"
-	JsonParseError = "could not parse the request body"
 )
 
-func JSONParseError(err interface{}, ctx *gin.Context, reqBody []byte, serviceId string, userId string) dtos.APIResponse {
-	var apiError = err.(dtos.APIError)
+func JSONParseError(apiError dtos.APIError, ctx *gin.Context, reqBody []byte, serviceId string, userId string) dtos.APIResponse {
 	apiResponse := dtos.APIResponse{
 		StatusCode:    strconv.Itoa(http.StatusBadRequest),
 		StatusMessage: JSONParseErrorMessage,
-		Error: dtos.APIError{
-			ErrorCode:    JSONParseErrorCode,
-			ErrorMessage: JsonParseError,
-			ErrorDetails: apiError.ErrorDetails,
-		},
+		Error: apiError,
 	}
 	var jsonMap map[string]interface{}
 	json.Unmarshal(reqBody, &jsonMap)
-	LogError(ctx, apiResponse, jsonMap, apiError.ErrorMessage, serviceId, userId)
+	LogError(ctx, apiResponse, jsonMap, apiError, serviceId, userId)
 	return apiResponse
 }
 
@@ -65,31 +56,25 @@ func EntityFetchSuccess(data interface{}) dtos.APIResponse {
 	}
 }
 
-func EntityFetchError(err error, ctx *gin.Context, serviceId string, userId string) dtos.APIResponse {
+func EntityFetchError(apiError dtos.APIError, ctx *gin.Context, serviceId string, userId string) dtos.APIResponse {
 	apiResponse := dtos.APIResponse{
 		StatusCode:    strconv.Itoa(http.StatusInternalServerError),
 		StatusMessage: FetchFailure,
-		Error: dtos.APIError{
-			ErrorCode:    PersistErrorCode,
-			ErrorMessage: InternalServerError,
-		},
+		Error: apiError,
 	}
-	LogError(ctx, apiResponse, make(map[string]interface{}), err, serviceId, userId)
+	LogError(ctx, apiResponse, make(map[string]interface{}), apiError, serviceId, userId)
 	return apiResponse
 }
 
-func EntityPersistError(entityName string, error error, reqBody []byte, ctx *gin.Context, serviceId string, userId string) dtos.APIResponse {
+func EntityPersistError(entityName string, apiError dtos.APIError, reqBody []byte, ctx *gin.Context, serviceId string, userId string) dtos.APIResponse {
 	apiResponse := dtos.APIResponse{
 		StatusCode:    strconv.Itoa(http.StatusInternalServerError),
 		StatusMessage: PersistError + entityName,
-		Error: dtos.APIError{
-			ErrorCode:    PersistErrorCode,
-			ErrorMessage: InternalServerError,
-		},
+		Error: apiError,
 	}
 	var jsonMap map[string]interface{}
 	json.Unmarshal(reqBody, &jsonMap)
-	LogError(ctx, apiResponse, jsonMap, error, serviceId, userId)
+	LogError(ctx, apiResponse, jsonMap, apiError, serviceId, userId)
 	return apiResponse
 }
 
@@ -108,10 +93,10 @@ func LogError(
 	ctx *gin.Context,
 	response dtos.APIResponse,
 	requestBody map[string]interface{},
-	errorBody error,
+	errorBody dtos.APIError,
 	serviceId string,
 	userId string) {
-	err := crash(errorBody)
+	err := crash(errors.New(errorBody.ErrorMessage))
 
 	stackTrace := err.(*errors.Error).ErrorStack()
 
