@@ -101,7 +101,6 @@ func LogError(
 	stackTrace := err.(*errors.Error).ErrorStack()
 
 	_, filename, line, _ := runtime.Caller(1)
-	var apiError = response.Error.(dtos.APIError)
 
 	kafka.Publish(
 		assemblers.AssembleErrorLog(
@@ -110,8 +109,8 @@ func LogError(
 				RequestBody:           requestBody,
 				RequestResponseBody:   response,
 				RequestResponseStatus: response.StatusCode,
-				ErrorMessage:          apiError.ErrorMessage,
-				ErrorCode:             apiError.ErrorCode,
+				ErrorMessage:          errorBody.ErrorMessage,
+				ErrorCode:             errorBody.ErrorCode,
 				ErrorStackTrace:       stackTrace,
 				ErrorLineNumber:       strconv.Itoa(line),
 				ErrorFileName:         filename,
